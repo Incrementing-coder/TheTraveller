@@ -9,4 +9,5 @@
     <dimen name="icon_width">60dip</dimen>
     <dimen name="icon_height">60dip</dimen>
     <dimen name="icon_padding">8dp</dimen>
+    <dimen name="g_top_margin">30dp</dimen>
 </resources>
