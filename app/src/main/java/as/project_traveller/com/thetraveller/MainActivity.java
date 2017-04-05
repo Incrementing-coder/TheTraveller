@@ -3,21 +3,33 @@ package as.project_traveller.com.thetraveller;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.concurrent.TimeUnit;
+
+import as.project_traveller.com.thetraveller.POJO.Model;
+import retrofit.Callback;
+import retrofit.GsonConverterFactory;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 
 public class MainActivity extends Activity {
 
-    Button  attract, hotels;
-    ImageButton map;
+    TextView textView1, textView2, textView3, textView4;
+    String url = "http://api.openweathermap.org";
+
+
+    ImageButton map,attract, hotels;
+    public  GPlusfrag status;
 
 
     @Override
@@ -27,11 +39,28 @@ public class MainActivity extends Activity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
 
+        textView1=(TextView)findViewById(R.id.textView2);
+        textView2=(TextView)findViewById(R.id.textView3);
+        textView3=(TextView)findViewById(R.id.textView4);
+
+        getReport();
+
+        status  = new GPlusfrag();
+        if(status.getStatus() == 1)
+        {
+            try {
+                TimeUnit.SECONDS.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            Toast.makeText(this,"Logged In",Toast.LENGTH_LONG).show();
+        }
+
         map = (ImageButton) findViewById(R.id.button);
-        attract = (Button) findViewById(R.id.button2);
-        hotels = (Button) findViewById(R.id.button3);
-        Typeface font = Typeface.createFromAsset(getApplicationContext().getAssets(), "BeyondWonderland.ttf");
-        attract.setTypeface(font);
+        attract = (ImageButton) findViewById(R.id.button2);
+        hotels = (ImageButton) findViewById(R.id.button3);
+       /* Typeface font = Typeface.createFromAsset(getApplicationContext().getAssets(), "BeyondWonderland.ttf");
+        attract.setTypeface(font);*/
 
         final Context context = this;
 
@@ -52,7 +81,49 @@ public class MainActivity extends Activity {
         });
 
 
+
     }
+
+    public void getReport(){
+
+        Retrofit retrofit= new Retrofit.Builder()
+                .baseUrl(url)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        RestInterface service = retrofit.create(RestInterface.class);
+
+        retrofit.Call<Model> call = service.getWeatherReport();
+
+        call.enqueue(new Callback<Model>() {
+            @Override
+            public void onResponse(Response<Model> response, Retrofit retrofit) {
+                try{
+                    String city = response.body().getCity().getName();
+                    String msg = response.body().getTemp().toString();
+                    String cnt = response.body().getCnt();
+
+                    textView1.setText("City :  "+city);
+                    textView2.setText("Status : "+msg);
+                    textView3.setText("Humidity : "+cnt);
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                    Toast.makeText(MainActivity.this,"Try Catch",Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Toast.makeText(MainActivity.this,"Error",Toast.LENGTH_SHORT).show();
+
+            }
+        });
+    }
+
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

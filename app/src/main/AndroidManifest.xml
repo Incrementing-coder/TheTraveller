@@ -62,6 +62,9 @@
             android:name=".Places"
             android:label="Places"
             android:theme="@style/Theme.AppCompat.Light" />
+        <activity android:name=".LoginActivity"
+            android:theme="@style/Theme.AppCompat.Light"></activity>
     </application>
+
 
 </manifest>
