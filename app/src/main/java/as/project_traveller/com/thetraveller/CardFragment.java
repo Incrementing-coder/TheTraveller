@@ -106,9 +106,27 @@ public class CardFragment extends Fragment{
             likeImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    
+                    boolean isFav = readState();
+                    
+                    if (isFav) {
+                        likeImageView.setTag(R.drawable.ic_liked);
+                        likeImageView.setImageResource(R.drawable.ic_liked);
+                        isFav = false;
+                        saveState(isFav);
+                        
+                        Toast.makeText(getActivity(),titleTextView.getText()+" added to favourites",Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        likeImageView.setTag(R.drawable.ic_like);
+                        likeImageView.setImageResource(R.drawable.ic_like);
+                        isFav = true;
+                        saveState(isFav);
+                        
+                        Toast.makeText(getActivity(),titleTextView.getText()+" removed from favourites",Toast.LENGTH_SHORT).show();
+                    }
 
-
-                    int id = (int)likeImageView.getTag();
+                   /* int id = (int)likeImageView.getTag();
                     if( id == R.drawable.ic_like){
 
                         likeImageView.setTag(R.drawable.ic_liked);
@@ -123,7 +141,7 @@ public class CardFragment extends Fragment{
                         Toast.makeText(getActivity(),titleTextView.getText()+" removed from favourites",Toast.LENGTH_SHORT).show();
 
 
-                    }
+                    } */
 
                 }
             });
@@ -145,7 +163,7 @@ public class CardFragment extends Fragment{
                     Intent shareIntent = new Intent();
                     shareIntent.setAction(Intent.ACTION_SEND);
                     shareIntent.putExtra(Intent.EXTRA_STREAM,imageUri);
-                    shareIntent.setType("image/jpeg");
+                    shareIntent.setType("image/jpg");
                     startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.send_to)));
 
 
@@ -179,6 +197,21 @@ public class CardFragment extends Fragment{
             listitems.add(item);
 
         }
+        
+    private void saveState(boolean isFavourite) {
+        SharedPreferences aSharedPreferenes = this.getSharedPreferences(
+            "Favourite", Context.MODE_PRIVATE);
+        SharedPreferences.Editor aSharedPreferenesEdit = aSharedPreferenes
+            .edit();
+        aSharedPreferenesEdit.putBoolean("State", isFavourite);
+        aSharedPreferenesEdit.commit();
+    }
+        
+     public void readState() {
+         SharedPreferences aSharedPreferenes = this.getSharedPreferences(
+            "Favourite", Context.MODE_PRIVATE);
+    return aSharedPreferenes.getBoolean("State", true);
+     }
 
 
 
